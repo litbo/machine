@@ -92,6 +92,24 @@ def showdatas(datingDataMat, datingLabels):
     axs[1][0].legend(handles=[didntLike, smallDoses, largeDoses])
     # 显示图片
     plt.show()
+#     为了使各个数据项的权值相同，所以要对数据项进行数据归一化
+#   算法：newValue = (oldValue - min) / (max - min)
+def autoNorm(dataSet):
+    #获得数据的最小值
+    minVals = dataSet.min(0)
+    maxVals = dataSet.max(0)
+    #最大值和最小值的范围
+    ranges = maxVals - minVals
+    #shape(dataSet)返回dataSet的矩阵行列数
+    normDataSet = np.zeros(np.shape(dataSet))
+    #返回dataSet的行数
+    m = dataSet.shape[0]
+    #原始值减去最小值
+    normDataSet = dataSet - np.tile(minVals, (m, 1))
+    #除以最大和最小值的差,得到归一化数据
+    normDataSet = normDataSet / np.tile(ranges, (m, 1))
+    #返回归一化数据结果,数据范围,最小值
+    return normDataSet, ranges, minVals
 
 
 if __name__ == '__main__':
@@ -99,6 +117,6 @@ if __name__ == '__main__':
     # 打开并处理数据
     datingDataMat, datingLabels = file2matrix(filename)
     print(datingDataMat)
-
-    print(datingLabels)
+    normDataSet, ranges, minVals = autoNorm(datingDataMat)
+    print(normDataSet)
     showdatas(datingDataMat,datingLabels)
